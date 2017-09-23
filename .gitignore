@@ -4,8 +4,6 @@ hopch/settings.py
 /hopch/settings.py
 app/migrations/00*
 **/__pycache__/
-media/
-media/*
 static/admin/
 hopch/.settings.py.swp
 *.swp
