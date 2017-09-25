@@ -1,6 +1,6 @@
 from django.shortcuts import render
 
-from hopch.settings import MEDIA_URL, MEDIA_ROOT, DEBUG
+from hopch.settings import MEDIA_URL
 
 
 def index(request):
@@ -10,3 +10,6 @@ def index(request):
                       'domain_url': "{}{}".format('http://', request.get_host()),
                       'media_url': MEDIA_URL
                   })
+
+
+

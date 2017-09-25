@@ -17,14 +17,19 @@ from django.conf.urls import url
 from django.contrib import admin
 from django.conf.urls.static import static
 
-from app import views
+from app import views, challenges
 from hopch.settings import DEBUG, STATIC_URL, STATIC_ROOT, MEDIA_URL, MEDIA_ROOT
 
 urlpatterns = [
+
+    # Admin
     url(r'^admin/', admin.site.urls),
 
     # Index
     url(r'^$', views.index, name='index'),
+
+    # Teach
+    url(r'^challenges$', challenges.views, name='challenges'),
 ]
 
 urlpatterns += static(STATIC_URL, document_root=STATIC_ROOT)
