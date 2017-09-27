@@ -18,6 +18,7 @@ class Challenges(models.Model):
 
 class Questions(models.Model):
     challenge = models.ForeignKey(Challenges)
+    order = models.IntegerField(default=0)
     text = models.TextField(default="")
     image = models.FileField(upload_to='images/', max_length=100, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)

@@ -1,6 +1,5 @@
 import os
 from django import forms
-from django.contrib.auth.models import Group
 
 
 class ExtFileField(forms.FileField):
@@ -37,12 +36,22 @@ class ExtFileField(forms.FileField):
                 raise forms.ValidationError("Tipo de fichero o tamanno no permitido!")
 
 
-class ProjectsForm(forms.Form):
-    name = forms.CharField(max_length=200, required=True, label='Name')
+class QuestionsForm(forms.Form):
+    text = forms.CharField(max_length=300, label='Text')
+    order = forms.IntegerField(initial=1, label='Order', required=False)
+    counter_time = forms.IntegerField(initial=60, label='Countdown', required=False)
 
+    # Answers
+    answer1 = forms.CharField(max_length=300, label='Answer 1', required=False)
+    answer2 = forms.CharField(max_length=300, label='Answer 2', required=False)
+    answer3 = forms.CharField(max_length=300, label='Answer 3', required=False)
+    answer4 = forms.CharField(max_length=300, label='Answer 4', required=False)
 
-class JobTypesForm(forms.Form):
-    name = forms.CharField(max_length=200, required=True, label='Name')
+    # Who is the correct answer
+    is_correct_answer1 = forms.BooleanField(initial=False, label='Is Correct Answer 1', required=False)
+    is_correct_answer2 = forms.BooleanField(initial=False, label='Is Correct Answer 2', required=False)
+    is_correct_answer3 = forms.BooleanField(initial=False, label='Is Correct Answer 3', required=False)
+    is_correct_answer4 = forms.BooleanField(initial=False, label='Is Correct Answer 4', required=False)
 
 
 class CustomersForm(forms.Form):
