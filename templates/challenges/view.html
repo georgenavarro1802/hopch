@@ -168,10 +168,10 @@
                                                         <!-- Right Side with Stats -->
                                                         <div class="col-md-3 col-xs-3 q-right-content">
                                                             <div style="float: right">
-                                                                <a class="btn btn-primary" href="{% url 'challenges' %}?action=edit_question&id={{ question.id }}">
+                                                                <a class="btn btn-primary" href="{% url 'challenges' %}?action=questions&id={{ challenge.id }}&qid={{ question.id }}">
                                                                     <i class="glyphicon glyphicon-edit"></i> Edit
                                                                 </a>
-                                                                <a class="btn btn-danger" style="margin-left: 0.5em" href="{% url 'challenges' %}?action=delete_question&id={{ question.id }}">
+                                                                <a class="btn btn-danger btn-delete-question" style="margin-left: 0.5em" href="javascript:void(0);" qid="{{ question.id }}" qorder="{{ question.order }}">
                                                                     <i class="glyphicon glyphicon-remove"></i> Delete
                                                                 </a>
                                                             </div>
@@ -199,11 +199,10 @@
                                 </div>
                             {% endfor %}
                             <div class="text-right">
-                                <a class="btn btn-primary" href="{% url 'challenges' %}?action=add_question&id={{ challenge.id }}">
+                                <a class="btn btn-primary" href="{% url 'challenges' %}?action=questions&id={{ challenge.id }}">
                                     <i class="glyphicon glyphicon-plus"></i> Add Question
                                 </a>
                             </div>
-
 
                         </div>
 
@@ -256,6 +255,38 @@
             }
 
             $("#myModal").modal('hide');
+
+        });
+
+        $(".btn-delete-question").click(function () {
+            var qid = $(this).attr("qid");
+            var qorder = $(this).attr("qorder");
+
+            // confirm dialog
+            alertify.confirm("Are you sure want to delete question: " + qorder, function (e) {
+                if (e) {
+                    // user clicked "ok"
+                    $.ajax({
+                        type: "POST",
+                        url: "{% url 'challenges' %}",
+                        data: {'action': 'delete_question', 'qid': qid},
+                        dataType: "json",
+                        success: function(data) {
+                            if (data.result === 'ok') {
+                                alertify.success(data.message);
+                                setTimeout(function () {
+                                    location.reload();
+                                }, 2000);
+                            } else {
+                                alertify.error(data.message);
+                            }
+                        },
+                        error: function() {
+                            alertify.error("Error saving data");
+                        }
+                    });
+                }
+            });
 
         });
 

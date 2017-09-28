@@ -2,7 +2,6 @@ from django.db import transaction
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import render
 
-from app.forms import QuestionsForm
 from app.functions import bad_json, ok_json, generate_code
 from app.models import Challenges, Questions
 
@@ -35,46 +34,69 @@ def views(request):
                 except Exception as ex:
                     return bad_json(error=1)
 
-            if action == 'add_question':
+            if action == 'questions':
                 challenge = Challenges.objects.get(pk=int(request.POST['id']))
-                f = QuestionsForm(request.POST)
-                if f.is_valid():
-                    try:
-                        with transaction.atomic():
+
+                question = None
+                if 'qid' in request.POST and request.POST['qid'] != '':
+                    question = Questions.objects.get(pk=int(request.POST['qid']))
+
+                correct_answer = int(request.POST['q_answers_checks'])
+
+                try:
+                    with transaction.atomic():
+
+                        if not question:
 
                             question = Questions(challenge=challenge,
-                                                 order=f.cleaned_data['order'],
-                                                 text=f.cleaned_data['text'],
-                                                 counter_time=f.cleaned_data['counter_time'],
-                                                 # Answers
-                                                 answer1=f.cleaned_data['answer1'],
-                                                 answer2=f.cleaned_data['answer2'],
-                                                 answer3=f.cleaned_data['answer3'],
-                                                 answer4=f.cleaned_data['answer4'],
-                                                 is_correct_answer1=f.cleaned_data['is_correct_answer1'],
-                                                 is_correct_answer2=f.cleaned_data['is_correct_answer2'],
-                                                 is_correct_answer3=f.cleaned_data['is_correct_answer3'],
-                                                 is_correct_answer4=f.cleaned_data['is_correct_answer4'])
-                            question.save()
+                                                 text=request.POST['q_text'],
+                                                 order=request.POST['q_order'],
+                                                 counter_time=request.POST['q_counter'],
+                                                 answer1=request.POST['q_answer1'],
+                                                 answer2=request.POST['q_answer2'],
+                                                 answer3=request.POST['q_answer3'],
+                                                 answer4=request.POST['q_answer4'],
+                                                 is_correct_answer1=True if correct_answer == 1 else False,
+                                                 is_correct_answer2=True if correct_answer == 2 else False,
+                                                 is_correct_answer3=True if correct_answer == 3 else False,
+                                                 is_correct_answer4=True if correct_answer == 4 else False)
 
-                            return ok_json(data={'redirect_url': '/challenges',
-                                                 'msg': 'You have successfully added a Question.'})
-                    except Exception:
-                        return bad_json(error=2)
-                else:
-                    return bad_json(message="Form is not valid.")
-            #
-            # if action == 'delete':
-            #     project = Projects.objects.get(pk=int(request.POST['id']))
-            #     try:
-            #         with transaction.atomic():
-            #             project.delete()
-            #             return ok_json(data={'redirect_url': '/challenges',
-            #                                  'msg': 'You have successfully deleted the PROJECT.'})
-            #     except Exception:
-            #         return bad_json(error=3)
+                        else:
 
-        return bad_json(error=0)
+                            question.text = request.POST['q_text']
+                            question.order = request.POST['q_order']
+                            question.counter_time = request.POST['q_counter']
+
+                            question.answer1 = request.POST['q_answer1']
+                            question.answer2 = request.POST['q_answer2']
+                            question.answer3 = request.POST['q_answer3']
+                            question.answer4 = request.POST['q_answer4']
+                            question.is_correct_answer1 = True if correct_answer == 1 else False
+                            question.is_correct_answer2 = True if correct_answer == 2 else False
+                            question.is_correct_answer3 = True if correct_answer == 3 else False
+                            question.is_correct_answer4 = True if correct_answer == 4 else False
+
+                        question.save()
+
+                        return ok_json(data={'redirect_url': '/challenges',
+                                             'message': 'Successfully {} a Question'.format('Created' if not question else 'Edited')})
+
+                except Exception:
+                    return bad_json(message="Error saving data")
+            
+            if action == 'delete_question':
+                try:
+                    question = Questions.objects.get(pk=int(request.POST['qid']))
+                    with transaction.atomic():
+                        if question.responses_set.exists():
+                            question.responses_set.all().delete()
+                        question.delete()
+                        return ok_json(data={'redirect_url': '/challenges',
+                                             'message': 'Successfully Deleted the Question.'})
+                except Exception:
+                    return bad_json(message="Error deleting Question")
+
+        return bad_json(message="Bad Request")
 
     else:
 
@@ -82,12 +104,15 @@ def views(request):
             if 'action' in request.GET:
                 action = request.GET['action']
 
-                if action == 'add_question':
+                if action == 'questions':
                     try:
                         data['title'] = 'New Question'
                         data['challenge'] = Challenges.objects.get(pk=request.GET['id'])
-                        data['form'] = QuestionsForm()
-                        return render(request, 'challenges/add.html', data)
+                        question = None
+                        if 'qid' in request.GET and request.GET['qid'] != '':
+                            question = Questions.objects.get(pk=int(request.GET['qid']))
+                        data['question'] = question
+                        return render(request, 'challenges/questions.html', data)
                     except Exception:
                         pass
                 #
@@ -100,18 +125,8 @@ def views(request):
                 #     except Exception:
                 #         pass
                 #
-                # if action == 'delete':
-                #     try:
-                #         data['title'] = 'Delete Project'
-                #         data['project'] = Projects.objects.get(pk=request.GET['id'])
-                #         data['is_delete'] = True
-                #         return render(request, 'challenges/delete.html', data)
-                #     except Exception:
-                #         pass
 
-            return HttpResponseRedirect('/teach')
+            return HttpResponseRedirect('/challenges')
 
-        else:
-
-            data['challenges'] = Challenges.objects.all()
-            return render(request, 'challenges/view.html', data)
+        data['challenges'] = Challenges.objects.all()
+        return render(request, 'challenges/view.html', data)

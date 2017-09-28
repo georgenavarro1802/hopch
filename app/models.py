@@ -15,6 +15,9 @@ class Challenges(models.Model):
         db_table = 'challenges'
         unique_together = ('code', )
 
+    def get_my_questions(self):
+        return self.questions_set.order_by('order')
+
 
 class Questions(models.Model):
     challenge = models.ForeignKey(Challenges)

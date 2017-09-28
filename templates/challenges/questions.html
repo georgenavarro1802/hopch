@@ -1,0 +1,171 @@
+{% load static %}
+<html>
+
+<head>
+
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet"/>
+    <link href='//fonts.googleapis.com/css?family=Lato:400,700&subset=latin,cyrillic,cyrillic-ext,vietnamese,latin-ext' rel='stylesheet' type='text/css'>
+    <link href="{% static 'css/font-awesome.min.css' %}" rel="stylesheet" />
+    <link href="{% static 'css/alertify.core.css' %}" rel="stylesheet" />
+    <link href="{% static 'css/alertify.default.css' %}" rel="stylesheet" />
+
+    <script src="{% static 'js/jquery-2.1.3.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/alertify.min.js' %}"></script>
+
+    <style>
+        .input-15em {
+            font-size: 1.5em;
+            height: 2em;
+        }
+    </style>
+
+</head>
+
+<body background="{% static 'images/sky.jpg' %}">
+
+<div class="container-fluid" style="margin: 8em 2em">
+    <div class="row">
+        <div class='col-sm-12'>
+
+            <div class="col-sm-2"></div>
+
+            <div class="col-sm-8">
+                <div class="well" style="margin-bottom: 3px; padding: 10px; color: #fff; background-color: #043b8a">
+                    <h4>{{ title }} -> Challenge: {{ challenge.name }}</h4>
+                </div>
+                <form id="formulario" class='well' enctype="multipart/form-data" autocomplete="off">
+                    <input type='hidden' name='action' value='questions'/>
+                    <input type='hidden' name='id' value='{{ challenge.id }}'/>
+                    <input type='hidden' name='qid' value='{% if question %}{{ question.id }}{% endif %}'/>
+
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <textarea id="q_text" name="q_text" class="form-control input-15em" placeholder="Text of the Question" cols="3" rows="3" style="resize: none">{% if question %}{{ question.text }}{% endif %}</textarea>
+                        </div>
+                        <div class="col-sm-2">
+                            <input id="q_order" name="q_order" class="form-control input-15em" placeholder="Order" style="text-align: right" value="{% if question %}{{ question.order }}{% else %}10{% endif %}">
+                        </div>
+                        <div class="col-sm-2">
+                            <input id="q_counter" name="q_counter" class="form-control input-15em" placeholder="Counter" value="{% if question %}{{ question.counter_time }}{% else %}60{% endif %}" style="text-align: right">
+                        </div>
+                    </div>
+
+                    <br/>
+                    <div class="row" style="margin-top: 1em">
+                        <div class="col-sm-1">
+                            <input type='radio' id="q_answer1_check" name="q_answers_checks" class="form-control" value="1" {% if question and question.is_correct_answer1 %}checked{% endif %}>
+                        </div>
+                        <div class="col-sm-11">
+                            <input id="q_answer1" name="q_answer1" class="form-control input-15em" placeholder="Answer 1" value="{% if question %}{{ question.answer1 }}{% endif %}">
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top: 1em">
+                        <div class="col-sm-1">
+                            <input type='radio' id="q_answer2_check" name="q_answers_checks" class="form-control" value="2" {% if question and question.is_correct_answer2 %}checked{% endif %}>
+                        </div>
+                        <div class="col-sm-11">
+                            <input id="q_answer2" name="q_answer2" class="form-control input-15em" placeholder="Answer 2" value="{% if question %}{{ question.answer2 }}{% endif %}">
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top: 1em">
+                        <div class="col-sm-1">
+                            <input type='radio' id="q_answer3_check" name="q_answers_checks" class="form-control" value="3" {% if question and question.is_correct_answer3 %}checked{% endif %}>
+                        </div>
+                        <div class="col-sm-11">
+                            <input id="q_answer3" name="q_answer3" class="form-control input-15em" placeholder="Answer 3" value="{% if question %}{{ question.answer3 }}{% endif %}">
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top: 1em">
+                        <div class="col-sm-1">
+                            <input type='radio' id="q_answer4_check" name="q_answers_checks" class="form-control" value="4" {% if question and question.is_correct_answer4 %}checked{% endif %}>
+                        </div>
+                        <div class="col-sm-11">
+                            <input id="q_answer4" name="q_answer4" class="form-control input-15em" placeholder="Answer 4" value="{% if question %}{{ question.answer4 }}{% endif %}">
+                        </div>
+                    </div>
+
+                    <p style="text-align: right; margin-top: 2em">
+                        <a class="btn btn-lg btn-success btn-form" id="formbutton" href="javascript:void(0);">
+                            <i class="fa fa-check"></i> {% if question %}Save{% else %}Create{% endif %}
+                        </a>
+                        <a href="{% url 'challenges' %}" class="btn btn-lg btn-info" style="margin-left: 0.5em">
+                            <i class="fa fa-arrow-left"></i> Cancel
+                        </a>
+                    </p>
+                </form>
+            </div>
+
+            <div class="col-sm-2"></div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+
+        $("#formbutton").click(function () {
+            var datosOK = false;
+
+            var q_text = $("#q_text").val();
+
+            var q_answer1_check = 0;
+            if($("#q_answer1_check").is(':checked')){
+                q_answer1_check = $("#q_answer1_check").val();
+            }
+            var q_answer2_check = 0;
+            if($("#q_answer2_check").is(':checked')){
+                q_answer2_check = $("#q_answer2_check").val();
+            }
+            var q_answer3_check = 0;
+            if($("#q_answer3_check").is(':checked')){
+                q_answer3_check = $("#q_answer3_check").val();
+            }
+            var q_answer4_check = 0;
+            if($("#q_answer4_check").is(':checked')){
+                q_answer4_check = $("#q_answer4_check").val();
+            }
+
+            // Check question text and answers checks
+            datosOK = (q_text !== '' && q_text !== " ") && (q_answer1_check > 0 || q_answer2_check > 0 || q_answer3_check > 0 || q_answer4_check > 0);
+
+            if(datosOK){
+
+                var formdata = new FormData($("#formulario")[0]);
+                $.ajax({
+                    type: "POST",
+                    url: "{% url 'challenges' %}",
+                    data: formdata,
+                    success: function(data) {
+                        if (data.result === 'ok') {
+                            alertify.success(data.message);
+                            setTimeout(function () {
+                                location.href = data.redirect_url;
+                            }, 2000);
+                        } else {
+                            alertify.error(data.message);
+                        }
+                    },
+                    error: function() {
+                        alertify.error("Error saving data");
+                    },
+                    dataType: "json",
+                    cache: false,
+                    contentType: false,
+                    processData: false
+
+                });
+
+            }else{
+                alertify.error("Form Error: Please check the form. You need to write a question and answers.");
+            }
+
+        });
+
+    });
+</script>
+
+</body>
+
+</html>
