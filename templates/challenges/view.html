@@ -14,7 +14,7 @@
 
 </head>
 
-<body >
+<body>
 
 
 <!-- Main Content -->
@@ -22,12 +22,13 @@
 
     <div class="row">
         <div class="col-sm-12">
-            <div class="col-sm-6">
-                <h3>List of Challenges </h3>
+            <div class="col-sm-2"></div>
+            <div class="col-sm-4">
+                <h3>Estudiar y Aprender la palabra de DIOS </h3>
             </div>
-            <div class="col-sm-6 text-right">
+            <div class="col-sm-4 text-right">
                 <!-- Button trigger modal -->
-                <button type="button" class="btn btn-success btn-lg" data-toggle="modal" data-target="#myModal">
+                <button type="button" class="btn btn-success btn-lg" data-toggle="modal" data-target="#myModal" style="margin-top: 1em">
                     <i class="fa fa-plus"></i> Add Challenge
                 </button>
 
@@ -52,6 +53,7 @@
                 </div>
 
             </div>
+            <div class="col-sm-2"></div>
         </div>
     </div>
 
@@ -198,6 +200,7 @@
                                     </div>
                                 </div>
                             {% endfor %}
+
                             <div class="text-right">
                                 <a class="btn btn-primary" href="{% url 'challenges' %}?action=questions&id={{ challenge.id }}">
                                     <i class="glyphicon glyphicon-plus"></i> Add Question
@@ -209,6 +212,12 @@
                     </div> <!-- end of challenge -->
 
                 </div> <!-- end panel primary -->
+            {% empty %}
+
+                <div class="text-center" style="margin-top: 5em">
+                    <img src="{% static 'images/pastor nada.gif' %}" width="1000px" height="500px"/>
+                </div>
+
             {% endfor %}
 
         </div>
