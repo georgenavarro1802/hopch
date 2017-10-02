@@ -13,7 +13,7 @@ admin.site.register(Challenges, ChallengesAdmin)
 
 
 class QuestionsAdmin(admin.ModelAdmin):
-    list_display = ('challenge', 'text', 'created', 'counter_time', 'answer1', 'answer2', 'answer3', 'answer4')
+    list_display = ('challenge', 'text', 'created', 'answer1', 'answer2', 'answer3', 'answer4')
     search_fields = ('challenge__name', 'text')
 
 admin.site.register(Questions, QuestionsAdmin)

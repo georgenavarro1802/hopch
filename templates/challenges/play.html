@@ -1,0 +1,176 @@
+{% load static %}
+<html>
+
+<head>
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet"/>
+
+    <style>
+
+        .font-white{
+            color: white;
+        }
+
+        .blue-color{
+            background-color: blue;
+        }
+
+        .red-color{
+            background-color: red;
+        }
+
+        .green-color{
+            background-color: green;
+        }
+
+        .brown-color{
+            background-color: brown;
+        }
+
+        .height-row{
+            height: 300px;
+            margin: 2em;
+        }
+
+        .button {
+            padding: 15px 25px;
+            text-align: center;
+            cursor: pointer;
+            outline: none;
+            color: #fff;
+            border: none;
+            border-radius: 15px;
+        {#            box-shadow: 0 9px #999;#}
+            vertical-align: middle!important;
+        }
+
+        .button:active {
+            box-shadow: 0 1px gray;
+            transform: translateY(10px);
+        }
+
+        .avatar{
+            margin: 10px auto 20px;
+            background-size: cover;
+            font-size: 150px;
+            line-height: 1.30!important;
+        }
+
+    </style>
+
+</head>
+
+<body id="mybody">
+
+<div class="container" id="response_correct_container" style="display: none">
+    <div class="row">
+        <div class="col-sm-4"></div>
+
+        <div class="col-sm-4" style="top: 10em; text-align: center">
+            <span>
+                <img src="{% static 'images/check_icon.png' %}" width="200" height="200"/>
+            </span>
+            <span style="vertical-align: middle; color: white; font-size: 60px">
+                CORRECT
+            </span>
+        </div>
+
+        <div class="col-sm-4"></div>
+    </div>
+</div>
+
+<div class="container" id="response_incorrect_container" style="display: none">
+    <div class="row">
+        <div class="col-sm-4"></div>
+
+        <div class="col-sm-4" style="top: 10em; text-align: center">
+            <span>
+                <img src="{% static 'images/incorrect_icon.png' %}" width="200" height="200"/>
+            </span>
+            <span style="vertical-align: middle; color: white; font-size: 60px">
+                INCORRECT
+            </span>
+        </div>
+
+        <div class="col-sm-4"></div>
+    </div>
+</div>
+
+<div class="container" id="mycontainer">
+    <div class="row" style="margin-top: 1em">
+
+        <table class="table table-bordered">
+            <tbody>
+            <tr class="height-row">
+                <td class="button red-color font-white">
+                    <div class="avatar">1</div>
+                </td>
+                <td class="button blue-color font-white">
+                    <div class="avatar">2</div>
+                </td>
+            </tr>
+            <tr class="height-row">
+                <td class="button green-color font-white">
+                    <div class="avatar">3</div>
+                </td>
+                <td class="button brown-color font-white">
+                    <div class="avatar">4</div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+<script src="{% static 'js/jquery-2.1.3.min.js' %}"></script>
+
+<script>
+
+    $(function(){
+
+        $(".avatar").click(function () {
+            var response_id = parseInt($(this).html());
+
+            if (response_id){
+
+                $("#mycontainer").fadeOut();
+
+                $.ajax({
+                    type: "POST",
+                    url: "{% url 'challenges' %}",
+                    data: {'action': 'response_question', 'response': response_id, 'qid': '{{ current_question.id }}' },
+                    success: function(data) {
+
+                        if (data.result === 'ok') {
+                            $("#mybody").css('background-color', 'green');
+                            $("#response_incorrect_container").fadeOut(500);
+                            $("#response_correct_container").fadeIn(500);
+
+                        } else {
+                            $("#mybody").css('background-color', 'red');
+                            $("#response_correct_container").fadeOut(500);
+                            $("#response_incorrect_container").fadeIn(500);
+                        }
+
+                    },
+                    error: function() {
+                        alert("Error getting data");
+                    }
+
+                });
+
+            }else{
+                alert("Error: Please select one answer")
+            }
+
+
+
+        });
+
+    });
+
+</script>
+
+</body>
+
+</html>

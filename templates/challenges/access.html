@@ -1,0 +1,86 @@
+{% load static %}
+<html>
+
+<head>
+
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'css/access.css' %}" rel="stylesheet"/>
+
+    <link href="{% static 'css/alertify.core.css' %}" rel="stylesheet" />
+    <link href="{% static 'css/alertify.default.css' %}" rel="stylesheet" />
+
+    <style>
+        form#ios input[type=password]{
+            height: 50px;
+            width: 40px;
+            text-align: center;
+            font-size: 2em;
+            border: 1px solid #000;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <div class="login-container">
+        <div id="output"></div>
+        <div class="avatar">
+            <img src="{% static 'images/logo_D.png' %}">
+        </div>
+        <div class="form-box">
+            <form autocomplete="off">
+                <input name="code" id="code" placeholder="Code">
+                <a class="btn btn-info btn-block btn-lg" style="margin-top: 1em" id="start"> Start</a>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<script src="{% static 'js/jquery-2.1.3.min.js' %}"></script>
+<script src="{% static 'js/alertify.min.js' %}"></script>
+
+<script>
+
+    $(function(){
+
+        $("#code").focus();
+
+        $("#start").click(function () {
+            var code = $('#code').val();
+
+            if (code){
+
+                $.ajax({
+                    type: "POST",
+                    url: "{% url 'challenges' %}",
+                    data: {'action': 'access_challenge', 'code': code},
+                    success: function(data) {
+                        if (data.result === 'ok') {
+                            alertify.success("Challenge will start in some seconds !!! ");
+                            setTimeout(function () {
+                                location.href = "{% url 'challenges' %}?action=play&id="+data.challengeID;
+                            }, 2000);
+                        } else {
+                            alertify.error(data.message);
+                        }
+                    },
+                    error: function() {
+                        alertify.error("Error saving data");
+                    }
+
+                });
+
+            }else{
+                alertify.error("Error: Please enter a valid Code.")
+            }
+        });
+
+    });
+
+</script>
+
+</body>
+
+</html>

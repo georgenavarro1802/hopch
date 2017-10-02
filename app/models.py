@@ -25,7 +25,6 @@ class Questions(models.Model):
     text = models.TextField(default="")
     image = models.FileField(upload_to='images/', max_length=100, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
-    counter_time = models.IntegerField(default=60, blank=True, null=True)
 
     # Answers
     answer1 = models.TextField(blank=True, null=True)

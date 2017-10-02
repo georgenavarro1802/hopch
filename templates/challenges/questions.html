@@ -40,14 +40,11 @@
                     <input type='hidden' name='qid' value='{% if question %}{{ question.id }}{% endif %}'/>
 
                     <div class="row">
-                        <div class="col-sm-8">
+                        <div class="col-sm-10">
                             <textarea id="q_text" name="q_text" class="form-control input-15em" placeholder="Text of the Question" cols="3" rows="3" style="resize: none">{% if question %}{{ question.text }}{% endif %}</textarea>
                         </div>
                         <div class="col-sm-2">
                             <input id="q_order" name="q_order" class="form-control input-15em" placeholder="Order" style="text-align: right" value="{% if question %}{{ question.order }}{% else %}10{% endif %}">
-                        </div>
-                        <div class="col-sm-2">
-                            <input id="q_counter" name="q_counter" class="form-control input-15em" placeholder="Counter" value="{% if question %}{{ question.counter_time }}{% else %}60{% endif %}" style="text-align: right">
                         </div>
                     </div>
 

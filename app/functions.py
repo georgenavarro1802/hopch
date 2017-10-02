@@ -94,22 +94,22 @@ def bad_json(message=None, error=None, extradata=None):
     lang = get_language()
 
     if message:
-        data.update({'msg': message})
+        data.update({'message': message})
     if error:
         if error == 0:
-            data.update({"msg": bad_request(lang)})
+            data.update({"message": bad_request(lang)})
         elif error == 1:
-            data.update({"msg": error_saving_data(lang)})
+            data.update({"message": error_saving_data(lang)})
         elif error == 2:
-            data.update({"msg": error_updating_data(lang)})
+            data.update({"message": error_updating_data(lang)})
         elif error == 3:
-            data.update({"msg": error_deleting_data(lang)})
+            data.update({"message": error_deleting_data(lang)})
         elif error == 4:
-            data.update({"msg": no_permission(lang)})
+            data.update({"message": no_permission(lang)})
         elif error == 5:
-            data.update({"msg": error_generating_information(lang)})
+            data.update({"message": error_generating_information(lang)})
         else:
-            data.update({"msg": system_error(lang)})
+            data.update({"message": system_error(lang)})
     if extradata:
         data.update(extradata)
     return HttpResponse(json.dumps(data), content_type="application/json")

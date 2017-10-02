@@ -17,7 +17,7 @@ from django.conf.urls import url
 from django.contrib import admin
 from django.conf.urls.static import static
 
-from app import views, challenges
+from app import views, challenges, access
 from hopch.settings import DEBUG, STATIC_URL, STATIC_ROOT, MEDIA_URL, MEDIA_ROOT
 
 urlpatterns = [
@@ -30,6 +30,9 @@ urlpatterns = [
 
     # Teach
     url(r'^challenges$', challenges.views, name='challenges'),
+
+    # Access
+    url(r'^access$', access.views, name='access'),
 ]
 
 urlpatterns += static(STATIC_URL, document_root=STATIC_ROOT)

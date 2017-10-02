@@ -51,6 +51,7 @@ def views(request):
                             question = Questions(challenge=challenge,
                                                  text=request.POST['q_text'],
                                                  order=request.POST['q_order'],
+                                                 counter_time=request.POST['q_counter'],
                                                  answer1=request.POST['q_answer1'],
                                                  answer2=request.POST['q_answer2'],
                                                  answer3=request.POST['q_answer3'],
@@ -82,7 +83,7 @@ def views(request):
 
                 except Exception:
                     return bad_json(message="Error saving data")
-
+            
             if action == 'delete_question':
                 try:
                     question = Questions.objects.get(pk=int(request.POST['qid']))
@@ -95,36 +96,6 @@ def views(request):
                 except Exception:
                     return bad_json(message="Error deleting Question")
 
-            if action == 'access_challenge':
-                try:
-                    code = request.POST['code']
-                    if not Challenges.objects.filter(code=code).exists():
-                        return bad_json(message='Code does not exist in the system.')
-
-                    return ok_json(data={'challengeID': Challenges.objects.filter(code=code)[0].id})
-
-                except Exception:
-                    return bad_json(message='Error getting data')
-
-            if action == 'response_question':
-                question = Questions.objects.get(pk=int(request.POST['qid']))
-                response = int(request.POST['response'])
-
-                if response == 1 and question.is_correct_answer1:
-                    return ok_json()
-
-                elif response == 2 and question.is_correct_answer2:
-                    return ok_json()
-
-                elif response == 3 and question.is_correct_answer3:
-                    return ok_json()
-
-                elif response == 4 and question.is_correct_answer4:
-                    return ok_json()
-
-                else:
-                    return bad_json(message='INCORRECT')
-
         return bad_json(message="Bad Request")
 
     else:
@@ -133,30 +104,6 @@ def views(request):
             if 'action' in request.GET:
                 action = request.GET['action']
 
-                if action == 'questions':
-                    try:
-                        data['title'] = 'New Question'
-                        data['challenge'] = Challenges.objects.get(pk=request.GET['id'])
-                        question = None
-                        if 'qid' in request.GET and request.GET['qid'] != '':
-                            question = Questions.objects.get(pk=int(request.GET['qid']))
-                        data['question'] = question
-                        return render(request, 'challenges/questions.html', data)
-                    except Exception:
-                        pass
+            return HttpResponseRedirect('/access')
 
-                if action == 'play':
-                    try:
-                        data['title'] = 'Play Challenge'
-                        data['challenge'] = challenge = Challenges.objects.get(pk=request.GET['id'])
-                        data['questions'] = questions = challenge.get_my_questions()
-                        data['first_question'] = questions[0]
-                        data['current_question'] = questions[0]
-                        return render(request, 'challenges/play.html', data)
-                    except Exception:
-                        pass
-
-            return HttpResponseRedirect('/challenges')
-
-        data['challenges'] = Challenges.objects.all()
-        return render(request, 'challenges/view.html', data)
+        return render(request, 'challenges/access.html', data)
